@@ -1,0 +1,29 @@
+confluencedata:
+  restart: on-failure:5
+  image: cheokman/confluence-data
+mysqldata:
+  restart: on-failure:5
+  image: cheokman/mysql-data
+mysql:
+  restart: on-failure:5
+  image: mysql/mysql-server:latest
+  environment:
+    MYSQL_DATABASE: confluence
+    MYSQL_USER: confluence
+    MYSQL_PASSWORD: changeme
+    MYSQL_ROOT_PASSWORD: changeme
+  volumes_from:
+  - mysqldata
+confluence:
+  restart: on-failure:5
+  build: ./confluence/
+  ports:
+  - 8090:8090/tcp
+  environment:
+    MYSQL_DATABASE: confluence
+    MYSQL_USER: confluence
+    MYSQL_PASSWORD: changeme
+  links:
+  - mysql
+  volumes_from:
+  - confluencedata
